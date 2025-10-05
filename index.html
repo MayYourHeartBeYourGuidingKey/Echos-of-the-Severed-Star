@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes of the Severed Star: An Interactive Chapter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Aethel Twilight -->
+    <!-- Application Structure Plan: A vertical "scrollytelling" SPA that guides the user through the chapter's narrative chronologically. The structure is thematic: 'The Academy' (setting), 'Two Sides of Grief' (character introduction), 'The Confrontation' (rising action), and 'The Harvest' (climax). This design transforms passive reading into an active experience. Key interactions, like clicking to reveal character thoughts and an analytical chart visualizing their power vs. pain, are placed at critical moments to deepen user understanding of the complex themes of grief and power. -->
+    <!-- Visualization & Content Choices: 
+        - Character Study -> Goal: Compare/Inform -> Viz/Method: Side-by-side interactive HTML/CSS cards for Ren and Kael -> Interaction: Clickable buttons reveal hidden divs with internal monologues -> Justification: Allows users to explore the psychological depth of each character's contrasting coping mechanisms.
+        - Tonal Shift -> Goal: Engage/Change -> Viz/Method: Dynamic background color change via JavaScript IntersectionObserver -> Interaction: Passive, scroll-based -> Justification: Creates an immersive atmosphere, visually signaling the story's descent from melancholy to danger.
+        - Power Dynamics -> Goal: Analyze/Compare -> Viz/Method: A Chart.js Bar Chart ('Power vs. Turmoil') comparing magical output to emotional instability for Ren, Kael, and the Antagonist -> Interaction: Chart animates on view -> Justification: Provides a clear, anime-style "stats screen" that visually explains the core conflict and why Ren's grief is a target, making an abstract concept tangible.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            transition: background-color 0.8s ease-in-out;
+        }
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .nav-link.active {
+            color: #6D28D9;
+            border-bottom-color: #6D28D9;
+        }
+        .character-card .details {
+            display: none;
+        }
+        .character-card.open .details {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+         @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <nav class="bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <span class="text-xl font-bold text-violet-800">Echoes of the Severed Star</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#academy" data-section="academy" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">The Silence</a>
+                        <a href="#grief" data-section="grief" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">Two Sides of Grief</a>
+                        <a href="#confrontation" data-section="confrontation" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">The Confrontation</a>
+                        <a href="#harvest" data-section="harvest" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">The Harvest</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="mt-16">
+        <section id="hero" class="min-h-[calc(100vh-4rem)] flex items-center justify-center text-center bg-slate-200 p-4">
+            <div>
+                <h1 class="text-4xl md:text-6xl font-bold text-violet-900 tracking-wider">Echoes of the Severed Star</h1>
+                <p class="mt-4 text-lg md:text-xl text-slate-700 max-w-2xl mx-auto">One year ago, their friend turned to dust. Today, the silence will be broken.</p>
+                <a href="#academy" class="mt-8 inline-block bg-violet-700 text-white font-bold py-3 px-8 rounded-full hover:bg-violet-800 transition-transform transform hover:scale-105">Enter Aethel Academy</a>
+            </div>
+        </section>
+
+        <section id="academy" class="py-20 px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold text-center text-violet-800 mb-4">The Gilded Cage of Silence</h2>
+                <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">Our story begins at the Arcane Academy of Aethel, a place of impossible magic and crushing expectations. For Ren, one of its most promising students, it has become a prison. It has been exactly 365 days since the death of his friend Elara, and the silence her absence left behind is now a deafening roar that has severed him from his own power.</p>
+                <div class="text-center bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                    <p class="text-lg italic text-slate-700 leading-relaxed">"His specialism, **Echo Magic**, was a cruel joke now. Echo Magic was the ability to read and manipulate the emotional residue... But Ren’s own interior landscape was so choked with grief and a thick, paralyzing fog that every attempt to reach outward failed. All he felt was the deafening, empty roar of his own heart."</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="grief" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-200">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold text-center text-violet-800 mb-4">Two Sides of Grief</h2>
+                <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">The trauma of that day on the Obsidian Plateau fractured more than just Ren's magic; it shattered a friendship. Ren and Kael, the only two survivors, now cope in dangerously opposite ways. One is frozen by his pain, the other burns with it. Explore their mindsets by clicking below.</p>
+                <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    
+                    <div id="renCard" class="character-card bg-white p-6 rounded-lg shadow-xl flex flex-col">
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold text-blue-700">REN, The Echo Weaver</h3>
+                            <p class="font-semibold text-slate-500 mb-4">Magic: Echoes of the Heart</p>
+                            <p class="text-slate-600 mb-4">Paralyzed by grief, Ren's ability to feel the emotions of the world has been overwritten by his own loss. He is trapped in a loop of memory, unable to move forward, his magic rendered inert by depression.</p>
+                        </div>
+                        <div class="flex-grow"></div>
+                        <div class="mt-4">
+                            <button class="toggle-details-btn w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">Reveal Inner Turmoil</button>
+                            <div class="details mt-4 bg-blue-50 border border-blue-200 p-4 rounded text-sm">
+                                <p class="italic text-blue-800">“It’s no good, Kael. Every time I try to link to the outside, it just… loops. I just see that night... I just feel like there’s a vacuum where my soul used to be!”</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="kaelCard" class="character-card bg-white p-6 rounded-lg shadow-xl flex flex-col">
+                         <div class="text-center">
+                            <h3 class="text-2xl font-bold text-red-700">KAEL, The Glyph Caster</h3>
+                            <p class="font-semibold text-slate-500 mb-4">Magic: Fury of the Mind</p>
+                            <p class="text-slate-600 mb-4">Kael processes his pain through anger and relentless training. He believes sentiment is a weakness and that only overwhelming power can prevent another tragedy. He buries his grief under a mountain of discipline and rage.</p>
+                        </div>
+                        <div class="flex-grow"></div>
+                        <div class="mt-4">
+                             <button class="toggle-details-btn w-full bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition">Reveal Inner Fury</button>
+                             <div class="details mt-4 bg-red-50 border border-red-200 p-4 rounded text-sm">
+                                 <p class="italic text-red-800">“Sentiment is a distraction, Ren. You think I don't feel it? ... Elara died because we weren't strong enough. We honor her by being stronger, not by collapsing into some melodramatic pit of self-pity.”</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="confrontation" class="py-20 px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto text-center">
+                <h2 class="text-3xl font-bold text-slate-200 mb-4">The Confrontation</h2>
+                <p class="max-w-3xl mx-auto text-slate-300 mb-12">Unable to reach his friend through words, Kael resorts to the only language he trusts: power. On the training grounds, his frustration boils over into a spectacular and violent display of Glyph magic, a desperate attempt to shock Ren out of his stupor. But it only serves to highlight the chasm that has grown between them.</p>
+                <div class="max-w-3xl mx-auto bg-slate-900/50 p-8 rounded-lg shadow-2xl">
+                    <p class="text-lg italic text-slate-200 leading-relaxed">“With a sound like ripping silk, a glowing, crimson **Glyph of Cauterization** appeared... A concentrated pillar of emerald flame roared across the training ground, hitting a practice spire twenty meters away. The spire vaporized in a clean, silent blast.”</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="harvest" class="py-20 px-4 sm:px-6 lg:px-8">
+             <div class="container mx-auto text-center">
+                <h2 class="text-3xl font-bold text-violet-200 mb-4">The Harvest</h2>
+                <p class="max-w-3xl mx-auto text-violet-300 mb-12">Just as the friends' conflict reaches its peak, something ancient and hungry rips through the fabric of reality above Aethel. An armored figure descends, drawn not by the Academy's light, but by its shadows. She wields a shard of the same darkness that took Elara, and she has come to collect a specific toll: the pain of the survivors.</p>
+                <div class="max-w-3xl mx-auto bg-violet-900/50 p-8 rounded-lg shadow-2xl mb-16">
+                    <p class="text-lg italic text-violet-200 leading-relaxed">“Arcanists,” she said, her voice a chilling, multi-layered whisper. “Aethel’s light is a stain. I’ve come to collect what you mourn... Especially you, **Echo Weaver**. Your grief makes the sweetest harvest.”</p>
+                </div>
+
+                <h3 class="text-2xl font-bold text-violet-200 mb-4">Analysis: Power vs. Turmoil</h3>
+                <p class="max-w-2xl mx-auto text-violet-300 mb-8">The antagonist's power is drawn from emotional pain. This chart visualizes the current state of our heroes and the intruder, revealing why Ren's unresolved grief makes him the perfect target.</p>
+                <div class="chart-container bg-slate-900/30 p-4 rounded-lg shadow-inner">
+                    <canvas id="powerChart"></canvas>
+                </div>
+             </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const body = document.body;
+
+            const sectionColors = {
+                'hero': '#E2E8F0',
+                'academy': '#F1F5F9',
+                'grief': '#E2E8F0',
+                'confrontation': '#1E293B',
+                'harvest': '#281a42'
+            };
+             const sectionTextColors = {
+                'confrontation': '#F1F5F9',
+                'harvest': '#DDD6FE'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        body.style.backgroundColor = sectionColors[sectionId] || '#F1F5F9';
+                        
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.dataset.section === sectionId) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            sections.forEach(section => observer.observe(section));
+
+            document.querySelectorAll('.toggle-details-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const card = button.closest('.character-card');
+                    card.classList.toggle('open');
+                    if (card.classList.contains('open')) {
+                        button.textContent = 'Hide Details';
+                    } else {
+                        button.textContent = card.id === 'renCard' ? 'Reveal Inner Turmoil' : 'Reveal Inner Fury';
+                    }
+                });
+            });
+
+            const powerChartCtx = document.getElementById('powerChart').getContext('2d');
+            let powerChart;
+
+            const chartObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (!powerChart) {
+                            powerChart = new Chart(powerChartCtx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['Ren', 'Kael', 'Antagonist'],
+                                    datasets: [{
+                                        label: 'Magical Output',
+                                        data: [1, 9, 8],
+                                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                        borderColor: 'rgba(59, 130, 246, 1)',
+                                        borderWidth: 1
+                                    }, {
+                                        label: 'Emotional Turmoil',
+                                        data: [10, 7, 3], 
+                                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                        borderColor: 'rgba(239, 68, 68, 1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    maintainAspectRatio: false,
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            max: 10,
+                                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                                            ticks: { 
+                                                color: '#D1D5DB',
+                                                font: { size: 14, family: "'Roboto Condensed', sans-serif" }
+                                            }
+                                        },
+                                        x: {
+                                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                            ticks: { 
+                                                color: '#D1D5DB',
+                                                font: { size: 14, family: "'Roboto Condensed', sans-serif" }
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            labels: {
+                                                color: '#D1D5DB',
+                                                font: { size: 14, family: "'Roboto Condensed', sans-serif" }
+                                            }
+                                        },
+                                        tooltip: {
+                                            titleFont: { size: 16, family: "'Orbitron', sans-serif" },
+                                            bodyFont: { size: 14, family: "'Roboto Condensed', sans-serif" }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.75 });
+            
+            chartObserver.observe(document.getElementById('powerChart'));
+        });
+    </script>
+
+</body>
+</html>
