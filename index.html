@@ -12,9 +12,10 @@
     <!-- Chosen Palette: Aethel Twilight -->
     <!-- Application Structure Plan: A vertical "scrollytelling" SPA that guides the user through the chapter's narrative chronologically. The structure is thematic: 'The Academy' (setting), 'Two Sides of Grief' (character introduction), 'The Confrontation' (rising action), and 'The Harvest' (climax). This design transforms passive reading into an active experience. Key interactions, like clicking to reveal character thoughts and an analytical chart visualizing their power vs. pain, are placed at critical moments to deepen user understanding of the complex themes of grief and power. -->
     <!-- Visualization & Content Choices: 
-        - Character Study -> Goal: Compare/Inform -> Viz/Method: Side-by-side interactive HTML/CSS cards for Ren and Kael -> Interaction: Clickable buttons reveal hidden divs with internal monologues -> Justification: Allows users to explore the psychological depth of each character's contrasting coping mechanisms.
+        - Character Study -> Goal: Compare/Inform -> Viz/Method: Side-by-side interactive HTML/CSS cards for Ren and Kael -> Interaction: Clickable buttons reveal hidden divs with internal monologues and LLM psychological analysis -> Justification: Allows users to explore the psychological depth of each character's contrasting coping mechanisms, validated by LLM-powered analysis.
+        - Lore Expansion -> Goal: Contextualize/Inform -> Viz/Method: LLM-generated scholarly text -> Interaction: Click button to fetch lore on Echo Magic -> Justification: Provides necessary world-building context instantly where the topic is introduced.
         - Tonal Shift -> Goal: Engage/Change -> Viz/Method: Dynamic background color change via JavaScript IntersectionObserver -> Interaction: Passive, scroll-based -> Justification: Creates an immersive atmosphere, visually signaling the story's descent from melancholy to danger.
-        - Power Dynamics -> Goal: Analyze/Compare -> Viz/Method: A Chart.js Bar Chart ('Power vs. Turmoil') comparing magical output to emotional instability for Ren, Kael, and the Antagonist -> Interaction: Chart animates on view -> Justification: Provides a clear, anime-style "stats screen" that visually explains the core conflict and why Ren's grief is a target, making an abstract concept tangible.
+        - Power Dynamics -> Goal: Analyze/Compare -> Viz/Method: A Chart.js Bar Chart ('Power vs. Turmoil') comparing magical output to emotional instability for Ren, Kael, and the Antagonist -> Interaction: Chart animates on view, followed by LLM narrative prediction -> Justification: Provides a clear, anime-style "stats screen" that visually explains the core conflict and why Ren's grief is a target, while the LLM predicts the immediate plot action.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -65,6 +66,7 @@
                         <a href="#grief" data-section="grief" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">Two Sides of Grief</a>
                         <a href="#confrontation" data-section="confrontation" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">The Confrontation</a>
                         <a href="#harvest" data-section="harvest" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">The Harvest</a>
+                        <a href="#contact" data-section="contact" class="nav-link text-slate-600 hover:text-violet-700 px-3 py-2 text-sm font-medium border-b-2 border-transparent transition">Contact</a>
                     </div>
                 </div>
             </div>
@@ -87,13 +89,19 @@
                 <div class="text-center bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
                     <p class="text-lg italic text-slate-700 leading-relaxed">"His specialism, **Echo Magic**, was a cruel joke now. Echo Magic was the ability to read and manipulate the emotional residue... But Ren’s own interior landscape was so choked with grief and a thick, paralyzing fog that every attempt to reach outward failed. All he felt was the deafening, empty roar of his own heart."</p>
                 </div>
+                
+                <!-- NEW GEMINI FEATURE: Lore Expansion -->
+                <div class="text-center mt-8">
+                    <button id="expandLore" class="bg-violet-500 text-white font-bold py-2 px-6 rounded hover:bg-violet-600 transition-transform transform hover:scale-105">Unfold the Lore: Echo Magic ✨</button>
+                    <div id="loreExpansionResult" class="mt-4 max-w-4xl mx-auto p-4 bg-violet-100 border-l-4 border-violet-500 text-slate-700 rounded-lg hidden"></div>
+                </div>
             </div>
         </section>
 
         <section id="grief" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-200">
             <div class="container mx-auto">
                 <h2 class="text-3xl font-bold text-center text-violet-800 mb-4">Two Sides of Grief</h2>
-                <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">The trauma of that day on the Obsidian Plateau fractured more than just Ren's magic; it shattered a friendship. Ren and Kael, the only two survivors, now cope in dangerously opposite ways. One is frozen by his pain, the other burns with it. Explore their mindsets by clicking below.</p>
+                <p class="max-w-3xl mx-auto text-center text-slate-600 mb-12">The trauma of that day on the Obsidian Plateau fractured more than just Ren's magic; it shattered a friendship. Ren and Kael, the only two survivors, now cope in dangerously opposite ways. One is frozen by his pain, the other burns with it. Explore their mindsets by clicking below, then analyze their coping mechanisms using the LLM feature.</p>
                 <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     
                     <div id="renCard" class="character-card bg-white p-6 rounded-lg shadow-xl flex flex-col">
@@ -108,6 +116,8 @@
                             <div class="details mt-4 bg-blue-50 border border-blue-200 p-4 rounded text-sm">
                                 <p class="italic text-blue-800">“It’s no good, Kael. Every time I try to link to the outside, it just… loops. I just see that night... I just feel like there’s a vacuum where my soul used to be!”</p>
                             </div>
+                            <button id="analyzeRen" class="w-full mt-4 bg-gray-800 text-yellow-300 font-bold py-2 px-4 rounded hover:bg-gray-700 transition">Analyze Coping Mechanism ✨</button>
+                            <div id="renAnalysisResult" class="mt-4 p-4 bg-gray-100 rounded-lg hidden"></div>
                         </div>
                     </div>
                     
@@ -123,6 +133,8 @@
                              <div class="details mt-4 bg-red-50 border border-red-200 p-4 rounded text-sm">
                                  <p class="italic text-red-800">“Sentiment is a distraction, Ren. You think I don't feel it? ... Elara died because we weren't strong enough. We honor her by being stronger, not by collapsing into some melodramatic pit of self-pity.”</p>
                             </div>
+                            <button id="analyzeKael" class="w-full mt-4 bg-gray-800 text-yellow-300 font-bold py-2 px-4 rounded hover:bg-gray-700 transition">Analyze Coping Mechanism ✨</button>
+                            <div id="kaelAnalysisResult" class="mt-4 p-4 bg-gray-100 rounded-lg hidden"></div>
                         </div>
                     </div>
 
@@ -150,15 +162,115 @@
 
                 <h3 class="text-2xl font-bold text-violet-200 mb-4">Analysis: Power vs. Turmoil</h3>
                 <p class="max-w-2xl mx-auto text-violet-300 mb-8">The antagonist's power is drawn from emotional pain. This chart visualizes the current state of our heroes and the intruder, revealing why Ren's unresolved grief makes him the perfect target.</p>
-                <div class="chart-container bg-slate-900/30 p-4 rounded-lg shadow-inner">
+                <div class="chart-container bg-slate-900/30 p-4 rounded-lg shadow-inner mb-8">
                     <canvas id="powerChart"></canvas>
                 </div>
+
+                <button id="predictAntagonist" class="mt-4 bg-yellow-300 text-gray-900 font-bold py-3 px-6 rounded hover:bg-yellow-400 transition-transform transform hover:scale-105">Predict Antagonist's Next Move ✨</button>
+                <div id="antagonistPredictionResult" class="mt-6 max-w-3xl mx-auto p-6 bg-violet-900/70 text-violet-100 rounded-lg hidden"></div>
              </div>
         </section>
 
     </main>
+    
+    <!-- NEW SECTION: Contact Me Footer -->
+    <footer id="contact" class="bg-gray-900 py-16 px-4 sm:px-6 lg:px-8 text-center text-violet-300">
+        <div class="container mx-auto max-w-xl">
+            <h2 class="text-3xl font-bold text-violet-400 mb-4">Continue the Conversation</h2>
+            <p class="text-lg mb-8">Did the magic hold your attention? If you have thoughts on the fate of Ren and Kael, or if you're interested in the full manuscript, reach out to the author directly.</p>
+            
+            <a href="mailto:author@aethelacademy.com" class="inline-block bg-violet-700 hover:bg-violet-600 text-white font-bold py-3 px-8 rounded-lg shadow-xl transition-all duration-300 transform hover:scale-105">
+                ✉️ Contact the Author
+            </a>
+
+            <div class="mt-10 pt-6 border-t border-violet-800/50">
+                <p class="text-sm text-violet-500 mb-2">Aethel Academy Communication Hub</p>
+                <p class="text-xs text-violet-600">© 2025 Echoes of the Severed Star. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
 
     <script>
+        const API_KEY = "";
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+
+        async function fetchGeminiResponse(systemInstruction, userQuery, targetElement) {
+            targetElement.innerHTML = '<span class="text-violet-400 animate-pulse font-semibold">Analyzing reality...</span>';
+            targetElement.classList.remove('hidden');
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+            };
+
+            let response;
+            let attempts = 0;
+            const maxAttempts = 5;
+            let delay = 1000;
+
+            while (attempts < maxAttempts) {
+                try {
+                    response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Analysis failed: Could not generate content.";
+                        targetElement.innerHTML = `<p class="text-sm leading-relaxed">${text}</p>`;
+                        return;
+                    } else if (response.status === 429) {
+                        attempts++;
+                        if (attempts < maxAttempts) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            delay *= 2; 
+                        } else {
+                            throw new Error("API rate limit exceeded after multiple retries.");
+                        }
+                    } else {
+                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    }
+                } catch (error) {
+                    targetElement.innerHTML = `<p class="text-red-500">Error in analysis: ${error.message}</p>`;
+                    console.error("Gemini API call failed:", error);
+                    return;
+                }
+            }
+        }
+
+        function setupLoreFeature() {
+            document.getElementById('expandLore').addEventListener('click', () => {
+                const loreQuery = "Explain the school of magic called 'Echo Magic' within the Arcane Academy of Aethel. Focus on its purpose (reading emotional residue) and its inherent vulnerability to the user's own emotional state (like grief). Be concise and scholarly (max 3 sentences).";
+                const system = "You are the Head Librarian of the Arcane Academy of Aethel, specializing in the history of magic. Your tone is academic and slightly archaic.";
+                fetchGeminiResponse(system, loreQuery, document.getElementById('loreExpansionResult'));
+            });
+        }
+
+        function setupAnalysisFeatures() {
+            // 1. Character Analysis
+            document.getElementById('analyzeRen').addEventListener('click', () => {
+                const renText = "Paralyzed by grief, Ren's ability to feel the emotions of the world has been overwritten by his own loss. He is trapped in a loop of memory, unable to move forward, his magic rendered inert by depression. He says, 'I just feel like there’s a vacuum where my soul used to be!'";
+                const system = "You are a clinical literary psychologist analyzing a fictional character's coping mechanism. Use precise, accessible terms like 'Emotional Paralysis,' 'Avoidance,' or 'Disassociation' to describe the severity and nature of their grief and how it impacts their function. Conclude with a single sentence about the primary conflict of their internal state.";
+                fetchGeminiResponse(system, `Analyze Ren's emotional state and coping mechanism based on this summary: ${renText}`, document.getElementById('renAnalysisResult'));
+            });
+
+            document.getElementById('analyzeKael').addEventListener('click', () => {
+                const kaelText = "Kael processes his pain through anger and relentless training. He believes sentiment is a weakness and that only overwhelming power can prevent another tragedy. He buries his grief under a mountain of discipline and rage. He says, 'Sentiment is a distraction, Ren.'";
+                const system = "You are a clinical literary psychologist analyzing a fictional character's coping mechanism. Use precise, accessible terms like 'Repressive Coping,' 'Hyper-focus,' or 'Emotional Avoidance' to describe the severity and nature of their grief and how it impacts their function. Conclude with a single sentence about the primary conflict of their internal state.";
+                fetchGeminiResponse(system, `Analyze Kael's emotional state and coping mechanism based on this summary: ${kaelText}`, document.getElementById('kaelAnalysisResult'));
+            });
+            
+            // 2. Antagonist Prediction
+            document.getElementById('predictAntagonist').addEventListener('click', () => {
+                const predictionQuery = "Based on the antagonist's stated goal to 'collect what you mourn' and the specific threat, 'Your grief makes the sweetest harvest,' predict the antagonist's immediate next physical and magical action targeting Ren. Be concise and dramatic (max 4 sentences), focusing on the mechanism of 'harvesting.'";
+                const system = "You are a dark fantasy lore master and narrative predictor. Generate a chilling and plausible next move for the powerful antagonist in this scene.";
+                fetchGeminiResponse(system, predictionQuery, document.getElementById('antagonistPredictionResult'));
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const sections = document.querySelectorAll('section');
             const navLinks = document.querySelectorAll('.nav-link');
@@ -169,18 +281,24 @@
                 'academy': '#F1F5F9',
                 'grief': '#E2E8F0',
                 'confrontation': '#1E293B',
-                'harvest': '#281a42'
+                'harvest': '#281a42',
+                'contact': '#1F2937' // Added for consistency, though body color is already set by 'harvest'
             };
              const sectionTextColors = {
                 'confrontation': '#F1F5F9',
                 'harvest': '#DDD6FE'
             };
 
+            const allScrollElements = document.querySelectorAll('section, footer');
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const sectionId = entry.target.id;
-                        body.style.backgroundColor = sectionColors[sectionId] || '#F1F5F9';
+                        // Only change body color for main content sections
+                        if (sectionId in sectionColors) {
+                           body.style.backgroundColor = sectionColors[sectionId] || '#F1F5F9';
+                        }
                         
                         navLinks.forEach(link => {
                             link.classList.remove('active');
@@ -192,7 +310,7 @@
                 });
             }, { threshold: 0.5 });
 
-            sections.forEach(section => observer.observe(section));
+            allScrollElements.forEach(element => observer.observe(element));
 
             document.querySelectorAll('.toggle-details-btn').forEach(button => {
                 button.addEventListener('click', () => {
@@ -273,6 +391,9 @@
             }, { threshold: 0.75 });
             
             chartObserver.observe(document.getElementById('powerChart'));
+
+            setupLoreFeature();
+            setupAnalysisFeatures();
         });
     </script>
 
